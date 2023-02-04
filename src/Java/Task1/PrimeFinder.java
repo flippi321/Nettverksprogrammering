@@ -1,5 +1,6 @@
+package Java.Task1;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class PrimeFinder extends Thread {
     ArrayList<Integer> sequence;

@@ -1,5 +1,6 @@
+package Java.Task1;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Application {
@@ -15,7 +16,7 @@ public class Application {
         finder.setNumOfThreads(threads);
         finder.run();
 
-        // Wait for PrimeFinder to finish
+        // Wait for Java.Task1.PrimeFinder to finish
         while (finder.isAlive()) {}
 
         ArrayList<Integer> primeNumbers = finder.getPrimes();

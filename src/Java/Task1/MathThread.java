@@ -1,3 +1,5 @@
+package Java.Task1;
+
 class MathThread extends Thread {
     private int number;
     boolean prime;
