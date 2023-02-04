@@ -11,10 +11,11 @@ public class Worker {
     }
 
     public void post(Runnable task) {
+        // Execute code
         executor.execute(task);
     }
 
-    public void shutdown() {
+    public void join() {
         executor.shutdown();
     }
 }
