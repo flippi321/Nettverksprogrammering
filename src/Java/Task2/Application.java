@@ -5,6 +5,9 @@ public class Application {
         Worker workerThreads = new Worker(4);
         Worker eventLoop = new Worker(1);
 
+        workerThreads.start();
+        eventLoop.start();
+
         // Task A
         workerThreads.post(new Thread() {
             @Override
@@ -36,6 +39,8 @@ public class Application {
                 System.out.println("This is task D");
             }
         });
+
+        // Join
         try{
             workerThreads.join();
             eventLoop.join();
