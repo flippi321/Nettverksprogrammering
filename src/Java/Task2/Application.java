@@ -6,7 +6,7 @@ public class Application {
         Worker eventLoop = new Worker(1);
 
         // Task A
-        workerThreads.post(new Runnable() {
+        workerThreads.post(new Thread() {
             @Override
             public void run() {
                 System.out.println("This is Task A");
@@ -14,7 +14,7 @@ public class Application {
         });
 
         // Task B
-        workerThreads.post(new Runnable() {
+        workerThreads.post(new Thread() {
             @Override
             public void run() {
                 System.out.println("This is task B, 1+1 = " + (1+1));
@@ -22,7 +22,7 @@ public class Application {
         });
 
         // Task C
-        eventLoop.post(new Runnable() {
+        eventLoop.post(new Thread() {
             @Override
             public void run() {
                 System.out.println("This is task C, 5 * 5 = " + (5*5));
@@ -30,14 +30,17 @@ public class Application {
         });
 
         // Task D
-        eventLoop.post(new Runnable() {
+        eventLoop.post(new Thread() {
             @Override
             public void run() {
                 System.out.println("This is task D");
             }
         });
-
-        workerThreads.join();
-        eventLoop.join();
+        try{
+            workerThreads.join();
+            eventLoop.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 }
