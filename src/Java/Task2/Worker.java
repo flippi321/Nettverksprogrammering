@@ -16,6 +16,7 @@ public class Worker  {
      * @param numberOfThreads the amount of threads we want to execute tasks
      */
     public Worker(int numberOfThreads) {
+        System.out.println("Creating Worker Class...");
         lock = new ReentrantLock();
         active = true;
         threads = new ArrayList<>(numberOfThreads);
@@ -47,6 +48,7 @@ public class Worker  {
         for(int i = 0; i < threads.size(); i++){
             // If we have a free slot, fill the slot with a new Thread
             if (!threads.get(i).isAlive()){
+                System.out.println("Updating " + threads.get(i).getName() + " with new Task");
                 threads.set(i, task);
                 tasks.remove(0);
                 return i;
@@ -56,6 +58,7 @@ public class Worker  {
     }
 
     public void post(Thread task) {
+        System.out.println("New task posted");
         tasks.add(task);
         lock.lock();
 
@@ -74,21 +77,8 @@ public class Worker  {
         return threads.size();
     }
 
-    public void joinWorkers() {
-        while(!threads.isEmpty()){
-            for(Thread thread : threads){
-                if (thread.isAlive()){
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
     public void join() throws InterruptedException {
+        System.out.println("Closing Application...");
         active = false;
         for(Thread thread : threads){
             thread.join();
