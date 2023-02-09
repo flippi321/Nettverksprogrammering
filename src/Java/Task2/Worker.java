@@ -45,32 +45,31 @@ public class Worker  {
     }
 
     public int findFreeThread(Thread task){
-        for(int i = 0; i < threads.size(); i++){
-            // If we have a free slot, fill the slot with a new Thread
-            if (!threads.get(i).isAlive()){
-                System.out.println("Updating " + threads.get(i).getName() + " with new Task");
-                threads.set(i, task);
-                tasks.remove(0);
-                return i;
+        lock.lock();
+        try {
+            for(int i = 0; i < threads.size(); i++){
+                // If we have a free slot, fill the slot with a new Thread
+                if (!threads.get(i).isAlive()){
+                    System.out.println("Updating " + threads.get(i).getName() + " with new Task");
+                    threads.set(i, task);
+                    tasks.remove(0);
+                    return i;
+                }
             }
+            return -1;
+        } finally {
+            lock.unlock();
         }
-        return -1;
     }
 
     public void post(Thread task) {
         System.out.println("New task posted");
         tasks.add(task);
-        lock.lock();
 
-        try {
-            if(!active) {
-                active = true;
-                start();
-            }
-        } finally {
-            lock.unlock();
+        if(!active) {
+            active = true;
+            start();
         }
-
     }
 
     public int size(){

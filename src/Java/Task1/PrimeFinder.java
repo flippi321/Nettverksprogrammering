@@ -1,6 +1,7 @@
 package Java.Task1;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PrimeFinder extends Thread {
     ArrayList<Integer> sequence;
@@ -12,6 +13,7 @@ public class PrimeFinder extends Thread {
     int numOfThreads;
 
     @Override
+
     public void run() {
         findPrimesBetween(start, end, numOfThreads);
     }
