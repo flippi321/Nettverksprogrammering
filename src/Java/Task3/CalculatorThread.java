@@ -5,14 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class CalculatorThread extends Thread {
-    InputStreamReader readConnection;
-    BufferedReader reader;
-    PrintWriter writer;
     Socket socket;
 
     public CalculatorThread (Socket socket){
@@ -23,33 +17,55 @@ public class CalculatorThread extends Thread {
     public void run() {
         try {
             // Communicates with Client
-            this.readConnection = new InputStreamReader(socket.getInputStream());
-            this.reader = new BufferedReader(readConnection);
-            this.writer = new PrintWriter(socket.getOutputStream(), true);
+            InputStreamReader readConnection = new InputStreamReader(socket.getInputStream());
+            BufferedReader reader = new BufferedReader(readConnection);
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-            writer.println("Connected to Client. Type your message");
+            // Send introduction to Client
+            writer.println("Welcome to the Calculator Thread");
+            writer.println("I will now guide you trough the math");
 
-            // Reader to catch information sent by Client
-            //Scanner commandReader = new Scanner(System.in);
+            // Recieve Affirmative
+            String input = reader.readLine();
+
+            // Inform Server
+            System.out.println("Thread Has sent intro message");
+            System.out.println(input);
 
             // Listen for inputs
-            String line = reader.readLine();
-            while (!line.equals("")) {
-                writer.println(line);  // sender teksten til tjeneren
-                String response = reader.readLine();  // mottar respons fra tjeneren
-                System.out.println("Fra tjenerprogrammet: " + response);
-                line = reader.readLine();
-            }
+            while (input!=null) {
+                // Get first number
+                writer.println("Write Your first number:");
+                input = reader.readLine();
+                input.replace(";", "");
+                System.out.println("Got input " + input);
+                int num1 = Integer.parseInt(input);
 
-            reader.close();
-            writer.close();
-            readConnection.close();
+                // Get second number
+                writer.println("Write Your second number:");
+                input = reader.readLine();
+                input.replace(";", "");
+                System.out.println("Got input " + input);
+                int num2 = Integer.parseInt(input);
+
+                // Get operator
+                writer.println("Type 1 for Addition and 2 for Substitution");
+                input = reader.readLine();
+                input.replace(";", "");
+                System.out.println("Got input " + input);
+                int operator = Integer.parseInt(input);
+
+                // Do the Quick Maths
+                String message = "[ERROR: INCORRECT OPERATOR INPUT]";
+                if(operator == 1){
+                    message = (num1 + " + " + num2 + " = " + (num1+num2));
+                } else if(operator == 2){
+                    message = (num1 + " - " + num2 + " = " + (num1-num2));
+                }
+                writer.println(message);
+            };
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        List list = new ArrayList<>();
-
     }
 }

@@ -5,7 +5,7 @@ import java.net.*;
 
 class SocketServer {
   public static void main(String[] args) throws IOException {
-    final int PORTNR = 1001;
+    final int PORTNR = 80;
     ServerSocket server = new ServerSocket(PORTNR);
     System.out.println("Server Created. Waiting for Input...\n\n");
     while(true){
@@ -13,5 +13,6 @@ class SocketServer {
       CalculatorThread calculator = new CalculatorThread(connection);
       calculator.start();
     }
+
   }
 }

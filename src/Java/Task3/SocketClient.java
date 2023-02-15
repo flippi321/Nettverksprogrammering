@@ -4,33 +4,40 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+import static java.lang.Thread.sleep;
+
 class SocketClient {
   public static void main(String[] args) throws IOException {
-    final int PORTNR = 1001;
+    final int PORTNR = 80;
+    String question;
+    String response;
 
     // Setup connection to Server
     Socket connection = new Socket("LAPTOP-AKTCRTBG", PORTNR);
-    System.out.println("Created connection... \n");
+    System.out.println("Created connection...");
 
     // Open communication with Server
     InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
     BufferedReader reader = new BufferedReader(streamReader);
     PrintWriter writer = new PrintWriter(connection.getOutputStream(), true);
+    System.out.println("Communications Open...");
 
-    // Write welcome-message from Thread
-    System.out.println("Welcome Message:");
-    System.out.println(reader.readLine());
+    // Read Introduction from Server
+    String message1 = reader.readLine();
+    String message2 = reader.readLine();
+    System.out.println(message1 + "\n" + message2);
+    // Return Success
+    writer.println("Message Recieved");
 
-    //Create Scanner to read from Commandline
+    // Create scanner
     Scanner commandReader = new Scanner(System.in);
-    String line = commandReader.nextLine();
+    question = reader.readLine();             // Read question from Thread
 
-    // Continuously reads from command line
-    while (!line.equals("")) {
-      writer.println(line);  // sender teksten til tjeneren
-      String response = reader.readLine();  // mottar respons fra tjeneren
-      System.out.println("Fra tjenerprogrammet: " + response);
-      line = commandReader.nextLine();
+    while(!question.equals("")){
+      System.out.println(question);           // Display Question
+      response = commandReader.nextLine();    // Get Response from User
+      writer.println(response);               // Send Response to Server
+      question = reader.readLine();           // Read next question from Thread
     }
 
     // Close connection
