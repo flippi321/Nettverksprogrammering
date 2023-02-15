@@ -1,4 +1,4 @@
-package Java.Task3;
+package Java.Task3.Task1;
 
 import java.io.*;
 import java.net.*;
