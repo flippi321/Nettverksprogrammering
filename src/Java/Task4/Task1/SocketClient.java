@@ -10,19 +10,23 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 class SocketClient {
-  final int PORTNR = 4555;
-  String question;
-  String response;
-  byte[] buffer;
   DatagramPacket packet;
-  DatagramSocket connection;
+  static DatagramSocket connection;
 
-  public void run() throws IOException {
-    // Setup connection to Server
-    connection = new DatagramSocket(PORTNR);
+  public static void main(String[] args) throws IOException {
+    final int PORTNR = 4555;
+    String question;
+    String response;
+    byte[] buffer;
+
+    connection = new DatagramSocket();
     System.out.println("Created connection...");
 
+    // Send handshake to Thread
+    sendMessage("Handshake");
+
     // Read Introduction from Server
+    System.out.println("Waiting for connection...");
     System.out.println(recieveMessage());
 
     // Return Success
@@ -45,22 +49,17 @@ class SocketClient {
     connection.close();
   }
 
-  private void sendMessage(String msg) throws IOException {
-    buffer = (msg).getBytes(StandardCharsets.UTF_8);
-    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), PORTNR);
+  public static void sendMessage(String msg) throws IOException {
+    byte[] buffer = (msg).getBytes(StandardCharsets.UTF_8);
+    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("127.0.0.1"), 4555);
     connection.send(packet);
   }
 
-  private String recieveMessage() throws IOException {
-    buffer = new byte[1500]; // Creates a new buffer to read messages into.
-    packet = new DatagramPacket(buffer, buffer.length);
+  public static String recieveMessage() throws IOException {
+    byte[] buffer = new byte[1500]; // Creates a new buffer to read messages into.
+    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
     connection.receive(packet); // Ready to receive a packet. Stores the packet into the packet-object.
-    return Arrays.toString(packet.getData()).replace(";", "");
-  }
-
-  public static void main(String[] args) throws IOException {
-    SocketClient client = new SocketClient();
-    client.run();
+    return new String(packet.getData()).trim().replace(";", "");
   }
 }
 

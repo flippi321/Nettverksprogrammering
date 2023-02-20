@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class CalculatorThread extends Thread {
+    int PORTNR;
+    InetAddress address;
     DatagramSocket socket;
     byte[] buffer;
     DatagramPacket packet;
@@ -20,6 +22,16 @@ public class CalculatorThread extends Thread {
     @Override
     public void run() {
         try {
+            // Recieve Handshake
+            buffer = new byte[1500]; // Creates a new buffer to read messages into.
+            packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet); // Ready to receive a packet. Stores the packet into the packet-object.
+
+            // Acquire information from handshake
+            address = packet.getAddress();
+            PORTNR = packet.getPort();
+
+
             // Send introduction to Client
             sendMessage("Welcome to the Calculator Thread");
 
@@ -45,9 +57,7 @@ public class CalculatorThread extends Thread {
                 }
 
                 // Send Response
-                buffer = (message).getBytes(StandardCharsets.UTF_8);
-                packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("127.0.0.1"), 2020);
-                socket.send(packet);
+                sendMessage(message);
             };
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,8 +65,9 @@ public class CalculatorThread extends Thread {
     }
 
     private void sendMessage(String msg) throws IOException {
+
         buffer = (msg).getBytes(StandardCharsets.UTF_8);
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("127.0.0.1"), 2020);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, PORTNR);
         socket.send(packet);
     }
 
@@ -64,7 +75,7 @@ public class CalculatorThread extends Thread {
         buffer = new byte[1500]; // Creates a new buffer to read messages into.
         packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet); // Ready to receive a packet. Stores the packet into the packet-object.
-        return Arrays.toString(packet.getData()).replace(";", "");
+        return new String(packet.getData()).trim().replace(";", "");
     }
 
     private int getNumber(String msg) throws IOException {
@@ -72,6 +83,8 @@ public class CalculatorThread extends Thread {
         sendMessage(msg);
 
         // Receiving Affirmative
-        return Integer.parseInt(recieveMessage());
+        String message = recieveMessage();
+        System.out.println(message);
+        return Integer.parseInt(message);
     }
 }
