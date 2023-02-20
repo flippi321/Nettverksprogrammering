@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 
 class SocketServer {
   public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-    final int PORTNR = 80;
+    final int PORTNR = 4555;
     AsynchronousSocketChannel channel = AsynchronousSocketChannel.open();
     ServerSocket server = new ServerSocket(PORTNR);
     System.out.println("Server Created. Waiting for Input...\n\n");

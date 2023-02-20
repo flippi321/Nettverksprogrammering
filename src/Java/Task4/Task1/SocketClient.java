@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 class SocketClient {
-  final int PORTNR = 80;
+  final int PORTNR = 4555;
   String question;
   String response;
   byte[] buffer;
@@ -47,7 +47,7 @@ class SocketClient {
 
   private void sendMessage(String msg) throws IOException {
     buffer = (msg).getBytes(StandardCharsets.UTF_8);
-    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), 2020);
+    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), PORTNR);
     connection.send(packet);
   }
 
