@@ -4,46 +4,66 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Scanner;
 
 class SocketClient {
-  public static void main(String[] args) throws IOException {
-    final int PORTNR = 80;
-    String question;
-    String response;
+  final int PORTNR = 80;
+  String question;
+  String response;
+  byte[] buffer;
+  DatagramPacket packet;
+  DatagramSocket connection;
 
+  public void run() throws IOException {
     // Setup connection to Server
-    Socket connection = new Socket("LAPTOP-AKTCRTBG", PORTNR);
+    connection = new DatagramSocket(PORTNR);
     System.out.println("Created connection...");
 
-    // Open communication with Server
-    InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
-    BufferedReader reader = new BufferedReader(streamReader);
-    PrintWriter writer = new PrintWriter(connection.getOutputStream(), true);
-    System.out.println("Communications Open...");
-
     // Read Introduction from Server
-    String message1 = reader.readLine();
-    String message2 = reader.readLine();
-    System.out.println(message1 + "\n" + message2);
+    System.out.println(recieveMessage());
+
     // Return Success
-    writer.println("Message Recieved");
+    sendMessage("Message Recieved");
 
     // Create scanner
     Scanner commandReader = new Scanner(System.in);
-    question = reader.readLine();             // Read question from Thread
+
+    // Read Question form Thread
+    question = recieveMessage();             // Read question from Thread
 
     while(!question.equals("")){
-      System.out.println(question);           // Display Question
-      response = commandReader.nextLine();    // Get Response from User
-      writer.println(response);               // Send Response to Server
-      question = reader.readLine();           // Read next question from Thread
+      System.out.println(question);         // Display Question
+      response = commandReader.nextLine();  // Get Response from User
+      sendMessage(response);                // Send Response to Server
+      question = recieveMessage();          // Read next question from Thread
     }
 
-    // Close connection
-    reader.close();
-    writer.close();
+    // Close connection when done
     connection.close();
   }
+
+  private void sendMessage(String msg) throws IOException {
+    buffer = (msg).getBytes(StandardCharsets.UTF_8);
+    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), 2020);
+    connection.send(packet);
+  }
+
+  private String recieveMessage() throws IOException {
+    buffer = new byte[1500]; // Creates a new buffer to read messages into.
+    packet = new DatagramPacket(buffer, buffer.length);
+    connection.receive(packet); // Ready to receive a packet. Stores the packet into the packet-object.
+    return Arrays.toString(packet.getData()).replace(";", "");
+  }
+
+  public static void main(String[] args) throws IOException {
+    SocketClient client = new SocketClient();
+    client.run();
+  }
 }
+
+
+
+
